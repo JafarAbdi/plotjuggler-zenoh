@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(plotjuggler_sample_plugins)
+project(plotjuggler_zenoh)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #-------  Include Qt dependencies -------
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -24,14 +25,8 @@ include_directories(
     ${Qt5Xml_INCLUDE_DIRS}
     ${Qt5Svg_INCLUDE_DIRS} )
 
-set(QT_LIBRARIES
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Xml
-    Qt5::Svg )
 
 add_definitions( ${QT_DEFINITIONS} -DQT_PLUGIN )
-set( PJ_LIBRARIES ${QT_LIBRARIES} )
 
 #--------------------------------------------------------
 #-------------- Build with CATKIN (ROS1) ----------------
@@ -71,38 +66,31 @@ else()
     message(STATUS "plotjuggler_LIBRARIES: ${plotjuggler_LIBRARIES}")
 
     include_directories(${plotjuggler_INCLUDE_DIR})
-    list(APPEND ${PJ_LIBRARIES} ${plotjuggler_LIBRARIES} )
     set(PJ_PLUGIN_INSTALL_DIRECTORY bin )
 
 endif()
 
 #------- Create the libraries -------
 
-add_library(PlotJugglerStreamSample SHARED
-    DataStreamSample/datastream_sample.h
-    DataStreamSample/datastream_sample.cpp )
+add_library(PlotJugglerStreamZenoh SHARED
+    src/datastream_zenoh.h
+    src/datastream_zenoh.cpp )
 
-target_link_libraries(PlotJugglerStreamSample
-    ${PJ_LIBRARIES})
-
-
-add_library(PlotJugglerDataSample SHARED
-   DataLoadSampleCSV/dataload_simple_csv.h
-   DataLoadSampleCSV/dataload_simple_csv.cpp )
-
-target_link_libraries(PlotJugglerDataSample
-    ${PJ_LIBRARIES})
+target_link_libraries(PlotJugglerStreamZenoh
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Xml
+    Qt5::Svg
+    plotjuggler_base)
 
 if (COMPILING_WITH_AMENT)
-    ament_target_dependencies(PlotJugglerStreamSample plotjuggler)
-    ament_target_dependencies(PlotJugglerDataSample plotjuggler)
+    ament_target_dependencies(PlotJugglerStreamZenoh plotjuggler)
 endif()
 #------- Install the libraries -------
 
 install(
     TARGETS
-        PlotJugglerStreamSample
-        PlotJugglerDataSample
+        PlotJugglerStreamZenoh
     DESTINATION
         ${PJ_PLUGIN_INSTALL_DIRECTORY}  )
 

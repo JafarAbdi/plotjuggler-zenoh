@@ -1,3 +1,6 @@
+external/
+.build/
+
 # Prerequisites
 *.d
 
@@ -32,3 +35,7 @@
 *.app
 /CMakeLists.txt.user
 build/*
+
+# pixi environments
+.pixi
+*.egg-info
